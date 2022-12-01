@@ -61,7 +61,7 @@ class Fitter(object):
             x_max,
             size
         )
-        for i in xrange(0, size):
+        for i in range(0, size):
             self.fit_func.SetParameter(i, 1.)
 
     def do_the_fit(self):
@@ -71,7 +71,7 @@ class Fitter(object):
         self.val_err = list(
             (self.fit_func.GetParameter(i_par),
              self.fit_func.GetParError(i_par))
-            for i_par in xrange(len(self.tmplts))
+            for i_par in range(len(self.tmplts))
         )
         self.ndf = self.fit_func.GetNDF()
 
@@ -131,7 +131,7 @@ class ThetaFitter(Fitter):
         filename = os.path.join(varial.analysis.cwd, wrp.name + ".root")
         f = ROOT.TFile.Open(filename, "RECREATE")
         f.cd()
-        for key, value in wrp.__dict__.iteritems():
+        for key, value in wrp.__dict__.items():
             if isinstance(value, ROOT.TH1):
                 value.SetName(key)
                 value.Write()
@@ -193,7 +193,7 @@ class ThetaFitter(Fitter):
         #)[self.template_names[-1]]
         #self.fit_res = theta_auto.bayesian_limits(self.model, what='expected')
         self.fit_res = theta_auto.asymptotic_cls_limits(self.model) #, what='expected')
-        print self.fit_res
+        print(self.fit_res)
 
         par_values = {
             "beta_signal": self.fit_res["beta_signal"][0][0],
@@ -234,19 +234,19 @@ class PyMCFitter(Fitter):
         # convert to numpy arrays
         fitted_cont = numpy.fromiter(
             (fitted.histo.GetBinContent(i)
-             for i in xrange(fitted.histo.GetNbinsX())),
+             for i in range(fitted.histo.GetNbinsX())),
             dtype=float,
             count=fitted.histo.GetNbinsX()
         )
         tmplts_cont = list(numpy.fromiter(
             (mc_t.histo.GetBinContent(i)
-             for i in xrange(mc_t.histo.GetNbinsX())),
+             for i in range(mc_t.histo.GetNbinsX())),
             dtype=float,
             count=mc_t.histo.GetNbinsX()
         ) for mc_t in tmplts)
         tmplts_errs = list(numpy.fromiter(
             (mc_t.histo.GetBinError(i) or 1e-7
-             for i in xrange(mc_t.histo.GetNbinsX())),
+             for i in range(mc_t.histo.GetNbinsX())),
             dtype=float,
             count=mc_t.histo.GetNbinsX()
         ) for mc_t in tmplts)
@@ -267,19 +267,19 @@ class PyMCFitter(Fitter):
                         numpy.vectorize(lambda x: x**-2)(v[1]),     # precision
                         value=v[0],
                         size=n_datapoints)
-            for i, v in enumerate(itertools.izip(tmplts_cont,
+            for i, v in enumerate(zip(tmplts_cont,
                                                  tmplts_errs))
         ))
         mc_factors = pymc.Container(list(
             pymc.Lognormal('factor_%02d' % i, 1., 1e-10, value=1.)
-            for i in xrange(n_tmplts)
+            for i in range(n_tmplts)
         ))
 
         @pymc.deterministic
         def fit_func(ts=tmplts, factors=mc_factors):
             return sum(
                 f * tmplt
-                for f, tmplt in itertools.izip(factors, ts)
+                for f, tmplt in zip(factors, ts)
             )
 
         fitted = pymc.Poisson('fitted', fit_func, fitted_cont,
@@ -305,7 +305,7 @@ class PyMCFitter(Fitter):
         self.val_err = list(
             (trace.mean(), trace.var()**.5)
             for trace in (mcmc.trace('factor_%02d' % i)[:, None]
-                          for i in xrange(self.n_tmplts))
+                          for i in range(self.n_tmplts))
         )
 
         if varial.settings.store_mcmc:
@@ -316,11 +316,11 @@ class PyMCFitter(Fitter):
 def find_x_range(data_hist):
     x_min = data_hist.GetXaxis().GetXmin()
     x_max = data_hist.GetXaxis().GetXmax()
-    for i in xrange(data_hist.GetNbinsX()):
+    for i in range(data_hist.GetNbinsX()):
         if data_hist.GetBinContent(i):
             x_min = data_hist.GetXaxis().GetBinLowEdge(i)
             break
-    for i in xrange(data_hist.GetNbinsX(), 0, -1):
+    for i in range(data_hist.GetNbinsX(), 0, -1):
         if data_hist.GetBinContent(i):
             x_max = data_hist.GetXaxis().GetBinUpEdge(i)
             break
@@ -430,7 +430,7 @@ class TemplateFitTool(varial.tools.Plotter):
         )
 
         tmplt_stack = op.stack(self.tmplts)
-        self.stream_content = [filter(None, (tmplt_stack, self.fitted))]
+        self.stream_content = [[_f for _f in (tmplt_stack, self.fitted) if _f]]
 
         del self.fitter
 

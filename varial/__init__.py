@@ -1,11 +1,11 @@
-import analysis
-import diskio
-import generators
-import monitor
-import operations
-import rendering
-import settings
-import wrappers
+from . import analysis
+from . import diskio
+from . import generators
+from . import monitor
+from . import operations
+from . import rendering
+from . import settings
+from . import wrappers
 
 ana = analysis
 gen = generators

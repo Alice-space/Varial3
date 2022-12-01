@@ -4,14 +4,14 @@ import ROOT
 import glob
 import os
 
-import generators as gen
-import toolinterface
-import rendering
-import analysis
-import settings
-import sparseio
-import monitor
-import util
+from . import generators as gen
+from . import toolinterface
+from . import rendering
+from . import analysis
+from . import settings
+from . import sparseio
+from . import monitor
+from . import util
 
 
 def rename_th2(wrps):
@@ -167,7 +167,7 @@ class Plotter(toolinterface.Tool):
             wrps = self.lookup_result('../HistoLoader')
         if wrps:
             if self.filter_keyfunc:
-                wrps = itertools.ifilter(self.filter_keyfunc, wrps)
+                wrps = filter(self.filter_keyfunc, wrps)
         else:
             wrps = self.load_func(self.filter_keyfunc)
         if self.hook_loaded_histos:
@@ -248,13 +248,13 @@ class RootFilePlotter(toolinterface.ToolChainParallel):
         if not aliases:
             self.message('WARNING Could not create aliases for plotting.')
         else:
-            aliases = itertools.ifilter(
+            aliases = filter(
                 lambda a: isinstance(a.type, str) and (
                     a.type.startswith('TH') or a.type == 'TProfile'
                 ),
                 aliases
             )
-            aliases = itertools.ifilter(filter_keyfunc, aliases)
+            aliases = filter(filter_keyfunc, aliases)
             aliases = sorted(
                 aliases,
                 key=lambda a: a.in_file_path
@@ -267,14 +267,14 @@ class RootFilePlotter(toolinterface.ToolChainParallel):
 
         # update colors (sorting needed, since dict is unsorted, and parallel
         # plotters should have the same result.
-        for l in sorted(legendnames.itervalues()):
+        for l in sorted(legendnames.values()):
             analysis.get_color(l)
 
         legendnames = dict((os.path.basename(p), l)
-                           for p, l in legendnames.iteritems())
+                           for p, l in legendnames.items())
         self.message(
             'INFO Legend names that I will use if not overwritten:\n'
-            + '\n'.join('%32s: %s' % (v, k) for k, v in legendnames.iteritems())
+            + '\n'.join('%32s: %s' % (v, k) for k, v in legendnames.items())
         )
 
         def gen_apply_legend(wrps):
@@ -318,7 +318,7 @@ class RootFilePlotter(toolinterface.ToolChainParallel):
                 def loader(filter_keyfunc):
                     filter_keyfunc = filter_keyfunc or (lambda w: True)
                     wrps = analysis.fs_aliases
-                    wrps = itertools.ifilter(
+                    wrps = filter(
                         lambda w: w.in_file_path.split('/')[:-1] == p and filter_keyfunc(w),
                         wrps
                     )

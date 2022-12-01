@@ -11,9 +11,9 @@ import varial.generators as gen
 from varial import settings
 from varial import operations
 from varial import analysis
-from itertools import ifilter
 
-from test_histotoolsbase import TestHistoToolsBase
+
+from .test_histotoolsbase import TestHistoToolsBase
 from varial.wrappers import StackWrapper, HistoWrapper
 
 
@@ -43,11 +43,11 @@ class TestGenerators(TestHistoToolsBase):
 
     def test_gen_load(self):
         aliases = list(gen.fs_content())
-        zjets_cutflow = ifilter(
+        zjets_cutflow = filter(
             lambda w: w.name == 'cutflow' and w.sample == 'zjets',
             aliases
         )
-        wrp = gen.load(zjets_cutflow).next()
+        wrp = next(gen.load(zjets_cutflow))
         self.assertTrue(isinstance(wrp.histo, TH1F))
         self.assertAlmostEqual(wrp.histo.Integral(), 2889.0)
 
@@ -72,12 +72,12 @@ class TestGenerators(TestHistoToolsBase):
 
     def test_gen_filter(self):
         aliases  = list(gen.fs_content())
-        data     = ifilter(lambda w: w.is_data, aliases)
-        tmplt    = ifilter(
+        data     = filter(lambda w: w.is_data, aliases)
+        tmplt    = filter(
             lambda w: w.in_file_path.split('/')[0] == 'fakeTemplate', aliases)
-        crtlplt  = ifilter(lambda w: w.in_file_path[:8] == 'CrtlFilt', aliases)
-        crtlplt2 = ifilter(lambda w: w.in_file_path[:8] == 'CrtlFilt', aliases)
-        ttgam_cf = ifilter(
+        crtlplt  = filter(lambda w: w.in_file_path[:8] == 'CrtlFilt', aliases)
+        crtlplt2 = filter(lambda w: w.in_file_path[:8] == 'CrtlFilt', aliases)
+        ttgam_cf = filter(
             lambda w: w.name == 'cutflow' and w.sample in ['ttgamma', 'tt'],
             aliases
         )
@@ -89,19 +89,19 @@ class TestGenerators(TestHistoToolsBase):
 
     def test_gen_sort(self):
         aliases      = list(gen.fs_content())
-        tmplt        = ifilter(
+        tmplt        = filter(
             lambda w: w.in_file_path.split('/')[0] == 'fakeTemplate', aliases)
         sorted       = list(gen.sort(tmplt))
-        s_name       = map(lambda x: x.name, sorted)
-        s_sample     = map(lambda x: x.sample, sorted)
-        s_is_data    = map(lambda x: x.is_data, sorted)
+        s_name       = [x.name for x in sorted]
+        s_sample     = [x.sample for x in sorted]
+        s_is_data    = [x.is_data for x in sorted]
         self.assertTrue(s_sample.index('ttgamma') < s_sample.index('zjets'))
         self.assertTrue(s_name.index('sihihEB') < s_name.index('sihihEE'))
         self.assertTrue(s_is_data.index(False) < s_is_data.index(True))
 
     def test_gen_group(self):
         from_fs  = gen.fs_content()
-        filtered = ifilter(lambda w: w.name == 'histo', from_fs)
+        filtered = filter(lambda w: w.name == 'histo', from_fs)
         sorted   = gen.sort(filtered)
         grouped  = gen.group(sorted)
         group_list = []
@@ -118,7 +118,7 @@ class TestGenerators(TestHistoToolsBase):
     def test_gen_fs_filter_sort_load(self):
         wrps = list(gen.fs_filter_sort_load(
             lambda w: w.name == 'cutflow' and w.sample in ['ttgamma', 'tt']))
-        s_is_data = map(lambda x: x.is_data, wrps)
+        s_is_data = [x.is_data for x in wrps]
 
         # just check for sorting and overall length
         self.assertTrue(s_is_data.index(False) < s_is_data.index(True))
@@ -126,7 +126,7 @@ class TestGenerators(TestHistoToolsBase):
 
     def test_gen_fs_mc_stack_n_data_sum(self):
         res = gen.fs_mc_stack_n_data_sum(lambda w: w.name == 'histo', use_all_data_lumi=False)
-        mc, data = res.next()
+        mc, data = next(res)
 
         # correct instances
         self.assertTrue(isinstance(mc, StackWrapper))
@@ -140,14 +140,14 @@ class TestGenerators(TestHistoToolsBase):
         h = str(mc.history)
         self.assertTrue(h.index('ttgamma') > h.index('zjets'))
         settings.stacking_order.reverse()
-        mc, data = res.next()
+        mc, data = next(res)
         h = str(mc.history)
         self.assertTrue(h.index('ttgamma') < h.index('zjets'))
 
     def test_gen_canvas(self):
         return  # TODO (this currently gives a segmentation fault)
 
-        stk, dat = gen.fs_mc_stack_n_data_sum().next()
+        stk, dat = next(gen.fs_mc_stack_n_data_sum())
         canvas = gen.canvas([(stk, dat)])
         cnv = next(canvas)
         # check for stack and data to be in canvas primitives

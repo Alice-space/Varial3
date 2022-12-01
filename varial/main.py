@@ -9,12 +9,12 @@ import sys
 import os
 import time
 
-import multiproc
-import settings
-import analysis
-import monitor
-import splash
-import tools
+from . import multiproc
+from . import settings
+from . import analysis
+from . import monitor
+from . import splash
+from . import tools
 
 
 ipython_mode = False
@@ -58,14 +58,14 @@ def _get_cmd_arg_settings():
         for arg in sys.argv
         if 1 == arg.count('=')
     )
-    for k, v in res.iteritems():
+    for k, v in res.items():
         res[k], ast.literal_eval(v)
     return res
 
 
 def process_settings_kws(kws):
     # replace setting, if its name already exists.
-    for k, v in kws.iteritems():
+    for k, v in kws.items():
         if hasattr(settings, k):
             setattr(settings, k, v)
         else:
@@ -80,7 +80,7 @@ def process_cmd_args():
 
 
 def tear_down(*args):
-    print "Tear down."
+    print("Tear down.")
     sig_handler.handle(signal.SIGINT, None)
     time.sleep(1)
 
@@ -104,9 +104,9 @@ def main(**main_kwargs):
 
     # iPython mode
     def ipython_warn():
-        print "WARNING =================================================="
-        print "WARNING Detected iPython, going to interactive mode...    "
-        print "WARNING =================================================="
+        print("WARNING ==================================================")
+        print("WARNING Detected iPython, going to interactive mode...    ")
+        print("WARNING ==================================================")
 
     if ipython_mode:
         ipython_warn()
@@ -140,11 +140,11 @@ def main(**main_kwargs):
     # print settings?
     if '--settings' in sys.argv:
         import inspect
-        print "Memberes of the settings module:"
+        print("Memberes of the settings module:")
         for member in dir(settings):
             if member[0] == '_' or inspect.ismodule(member):
                 continue
-            print "  ", member, "=", getattr(settings, member)
+            print("  ", member, "=", getattr(settings, member))
         exit()
 
     if not toolchain:

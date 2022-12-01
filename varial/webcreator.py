@@ -4,13 +4,13 @@ import datetime
 import sys
 import os
 
-import toolinterface
-import settings
-import analysis
-import wrappers
-import sparseio
-import diskio
-import util
+from . import toolinterface
+from . import settings
+from . import analysis
+from . import wrappers
+from . import sparseio
+from . import diskio
+from . import util
 
 
 class WebCreator(toolinterface.Tool):
@@ -417,7 +417,7 @@ class WebCreator(toolinterface.Tool):
         # lin/log pairs
         image_names = sorted(self.image_names)
         image_name_tuples = []
-        for i in xrange(len(image_names)):
+        for i in range(len(image_names)):
             try:
                 a, b = image_names[i], image_names[i+1]
             except IndexError:
@@ -576,12 +576,12 @@ class WebCreator(toolinterface.Tool):
 
     def make_cross_link_menus(self):
         def n_path_elements_different(p1, p2):
-            return sum(not a == b for a, b in itertools.izip(p1, p2))
+            return sum(not a == b for a, b in zip(p1, p2))
 
         def path_different_at_index(p1, p2):
             return sum(itertools.takewhile(
                 int,
-                (a == b for a, b in itertools.izip(p1, p2))
+                (a == b for a, b in zip(p1, p2))
             ))
 
         def rel_path(other_path, nth_elem, img):
@@ -593,7 +593,7 @@ class WebCreator(toolinterface.Tool):
         def find_paths_for_image(img, path, paths_with_same_len):
             p = path.split('/')                 # 1st items are current path
             menu_items = list([elem] for elem in p)
-            for other_path, other_img_set in paths_with_same_len.iteritems():
+            for other_path, other_img_set in paths_with_same_len.items():
                 if path == other_path:
                     continue
                 if img not in other_img_set:
@@ -644,8 +644,8 @@ class WebCreator(toolinterface.Tool):
             with open(path + '/index.html', 'w') as f:
                 f.writelines(web_lines)
 
-        for paths_with_same_len in self.cross_link_images.itervalues():
-            for path, img_set in paths_with_same_len.iteritems():
+        for paths_with_same_len in self.cross_link_images.values():
+            for path, img_set in paths_with_same_len.items():
                 img_menu_items = {}
                 for img in img_set:
                     res = find_paths_for_image(img, path, paths_with_same_len)

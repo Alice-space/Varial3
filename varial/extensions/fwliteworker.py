@@ -41,7 +41,7 @@ def run_workers(event_handle_wrp):
     workers = event_handle_wrp.workers
     if not event_handle_wrp.event_handle.size():
         del event_handle_wrp.event_handle
-        print "Skipping (no events): ", event_handle_wrp.filenames
+        print("Skipping (no events): ", event_handle_wrp.filenames)
         event_handle_wrp.results = []
         event_handle_wrp.workers = None
         return event_handle_wrp
@@ -52,12 +52,12 @@ def run_workers(event_handle_wrp):
             w.node_setup(event_handle_wrp)
         except Exception as e:
             if not isinstance(e, KeyboardInterrupt):
-                print '\nin node_setup:'
+                print('\nin node_setup:')
                 traceback.print_exc(file=sys.stdout)
-                print event_handle_wrp
-                print '\n'
+                print(event_handle_wrp)
+                print('\n')
             raise e
-        for v in w.result.__dict__.values():
+        for v in list(w.result.__dict__.values()):
             if isinstance(v, ROOT.TH1):
                 v.SetDirectory(0)
 
@@ -69,14 +69,14 @@ def run_workers(event_handle_wrp):
                     w.node_process_event(event)
                 except Exception as e:
                     if not isinstance(e, KeyboardInterrupt):
-                        print '\nin node_process_event:'
+                        print('\nin node_process_event:')
                         traceback.print_exc(file=sys.stdout)
-                        print event_handle_wrp
-                        print '\n'
+                        print(event_handle_wrp)
+                        print('\n')
                     raise e
     if event_handle_wrp.event_handle.size():
         if _proxy and _proxy.do_profiling:
-            print 'Running with cProfile: ', event_handle_wrp.filenames
+            print('Running with cProfile: ', event_handle_wrp.filenames)
             import cProfile
             cProfile.runctx(
                 'do_the_eventloop()',
@@ -97,10 +97,10 @@ def run_workers(event_handle_wrp):
             w.node_finalize(event_handle_wrp)
         except Exception as e:
             if not isinstance(e, KeyboardInterrupt):
-                print '\nin node_finalize:'
+                print('\nin node_finalize:')
                 traceback.print_exc(file=sys.stdout)
-                print event_handle_wrp
-                print '\n'
+                print(event_handle_wrp)
+                print('\n')
             raise e
         if not w.result.is_empty():
             workers_with_result.append(w)
@@ -197,7 +197,7 @@ def _add_results(event_handle_wrps):
         for new_res in evt_hndl_wrp.results:
             if new_res.id in res_sums:
                 res_sum = res_sums[new_res.id]
-                for k, v in new_res.__dict__.iteritems():
+                for k, v in new_res.__dict__.items():
                     if isinstance(v, ROOT.TH1):
                         getattr(res_sum, k).Add(v)
             else:
@@ -211,7 +211,7 @@ def _add_results(event_handle_wrps):
                 _proxy.files_done[evt_hndl_wrp.sample] = {
                     evt_hndl_wrp.filenames[0]: True
                 }
-            for res_sum in res_sums.values():
+            for res_sum in list(res_sums.values()):
                 diskio.write(res_sum, '.cache/' + res_sum.id)
             diskio.write(_proxy, '.cache/' + _proxy.name)
             os.system('mv .cache/* .')
@@ -231,7 +231,7 @@ def work(workers, event_handles=None):
         os.mkdir('.cache')
 
         def event_handle_gen():
-            for sample, files in _proxy.event_files.iteritems():
+            for sample, files in _proxy.event_files.items():
                 for f in files:
                     if sample in _proxy.files_done:
                         if f in _proxy.files_done[sample]:
@@ -254,7 +254,7 @@ def work(workers, event_handles=None):
             _proxy.max_num_processes
         ).imap_unordered(run_workers, event_handles)
     else:
-        results_iter = itertools.imap(run_workers, event_handles)
+        results_iter = map(run_workers, event_handles)
 
     results_iter = my_imap(None, event_handles)
 

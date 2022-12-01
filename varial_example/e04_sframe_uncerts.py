@@ -41,7 +41,7 @@ def set_uncert_func(uncert_name):
         output_dir = cycle.get('OutputDirectory')
         cycle.set('OutputDirectory', os.path.join(output_dir, uncert_name))
 
-        for name, value in uncert.iteritems():
+        for name, value in uncert.items():
             uc_item = list(i for i in user_config if i.get('Name') == name)
             assert uc_item, 'could not find item with name: %s' % name
             uc_item[0].set('Value', value)

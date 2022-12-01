@@ -5,7 +5,7 @@ On disk, a wrapper is represented by a .info file. If it contains root objects,
 there's a .root file with the same name in the same directory.
 """
 
-import settings  #  init ROOT first
+from . import settings  #  init ROOT first
 
 from ROOT import TFile, TDirectory, TH1, TObject, TTree
 from os.path import basename, dirname, join
@@ -15,9 +15,9 @@ import resource
 import glob
 import os
 
-import wrappers
-import history
-import monitor
+from . import wrappers
+from . import history
+from . import monitor
 
 
 _n_file_limit = resource.getrlimit(resource.RLIMIT_NOFILE)[1]
@@ -76,7 +76,7 @@ def get_open_root_file(filename):
 
 
 def close_open_root_files():
-    for name, file_handle in _open_root_files.iteritems():
+    for name, file_handle in _open_root_files.items():
         file_handle.Close()
     _open_root_files.clear()
 
@@ -138,7 +138,7 @@ def write(wrp, filename=None, suffices=(), mode='RECREATE'):
     if isinstance(wrp, wrappers.WrapperWrapper):
         _write_wrapperwrapper(wrp, filename)
     # write root objects (if any)
-    if any(isinstance(o, TObject) for o in wrp.__dict__.itervalues()):
+    if any(isinstance(o, TObject) for o in wrp.__dict__.values()):
         wrp.root_filename = basename(filename+'.root')
         f = TFile.Open(filename+'.root', mode)
         f.cd()
@@ -247,14 +247,14 @@ def _write_wrapper_objs(wrp, file_handle):
     if isinstance(wrp, wrappers.FileServiceWrapper):
         dirfile = file_handle.Get(wrp.name) or file_handle.mkdir(wrp.name, wrp.name)
         dirfile.cd()
-        for key, value in wrp.__dict__.iteritems():
+        for key, value in wrp.__dict__.items():
             if not isinstance(value, TObject):
                 continue
             value.Write()
             wrp.root_file_obj_names[key] = value.GetName()
         dirfile.Close()
     else:
-        for key, value in wrp.__dict__.iteritems():
+        for key, value in wrp.__dict__.items():
             if not isinstance(value, TObject):
                 continue
             dirfile = file_handle.mkdir(key, key)
@@ -299,7 +299,7 @@ def _read_wrapper_objs(info, path):
     root_file = join(path, info['root_filename'])
     obj_paths = info['root_file_obj_names']
     is_fs_wrp = info['klass'] == 'FileServiceWrapper'
-    for key, value in obj_paths.iteritems():
+    for key, value in obj_paths.items():
         if is_fs_wrp:
             obj = _get_obj_from_file(root_file, info['name'] + '/' + value)
         else:
@@ -397,8 +397,8 @@ def _wrapperize(bare_histo, alias):
 
 
 ################################################### write and close on exit ###
-import multiproc
-import analysis
+from . import multiproc
+from . import analysis
 import atexit
 
 
@@ -411,7 +411,7 @@ def write_fileservice(filename='', initial_mode='RECREATE'):
         return
 
     filename = filename or settings.fileservice_filename
-    fs_wrappers = analysis.fs_wrappers.values()
+    fs_wrappers = list(analysis.fs_wrappers.values())
     write(fs_wrappers[0], filename=filename, mode=initial_mode)
     for wrp in fs_wrappers[1:]:
         write(wrp, filename=filename, mode='UPDATE')

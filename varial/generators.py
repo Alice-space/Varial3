@@ -15,13 +15,13 @@ http://www.dabeaz.com/generators/index.html
 ################################################################### utility ###
 import itertools
 
-from util import iterableize
-import settings  # init ROOT first
-import analysis
-import wrappers
+from .util import iterableize
+from . import settings  # init ROOT first
+from . import analysis
+from . import wrappers
 import operator
-import monitor
-import diskio
+from . import monitor
+from . import diskio
 
 
 
@@ -139,7 +139,7 @@ def filter_active_samples(wrps):
     if no_active_smpls:
         monitor.message('generators.filter_active_samples',
                         'WARNING No active samples defined. Will yield all.')
-    return itertools.ifilter(
+    return filter(
         lambda w: no_active_smpls or (
                       hasattr(w, 'sample')
                       and w.sample in analysis.active_samples
@@ -202,7 +202,7 @@ def interleave(*grouped_wrps):
     :param grouped_wrps:    grouped iterators (multi-argument)
     :yields:                generator object
     """
-    zipped = itertools.izip(grouped_wrps)
+    zipped = zip(grouped_wrps)
     for grp in zipped:
         yield itertools.chain(*grp)
 
@@ -246,7 +246,7 @@ def split_data_bkg_sig(wrps):
 
 
 ################################################################ operations ###
-import operations as op
+from . import operations as op
 
 
 def _generate_op(op_func):
@@ -337,7 +337,7 @@ gen_noex_rebin_nbins_max    = _generate_op_noex(op.rebin_nbins_max)
 
 def gen_norm_to_data_lumi(wrps):
     return gen_prod(
-        itertools.izip(
+        zip(
             gen_norm_to_lumi(wrps),
             itertools.repeat(analysis.data_lumi_sum_wrp())
         )
@@ -399,8 +399,8 @@ def gen_make_eff_graphs(wrps,
             while res:
                 yield res.pop(0)
 
-    assert not subs, 'ERROR, some subs are left: '+str(subs.keys())
-    assert not tots, 'ERROR, some tots are left: '+str(tots.keys())
+    assert not subs, 'ERROR, some subs are left: '+str(list(subs.keys()))
+    assert not tots, 'ERROR, some tots are left: '+str(list(tots.keys()))
 
 
 def gen_make_th2_projections(wrps, keep_th2=True):
@@ -502,7 +502,7 @@ def gen_squash_sys_acc(wrps, accumulator, calc_sys_integral=False):
 
 
 ############################################################### load / save ###
-import pklio
+from . import pklio
 import glob
 import os
 
@@ -525,7 +525,7 @@ def resolve_file_pattern(pattern='./*.root'):
         pattern = [pattern]
 
     result = list(glob.glob(resolve_rel_pattern(pat)) for pat in pattern)
-    for pat, res in itertools.izip(pattern, result):
+    for pat, res in zip(pattern, result):
         if not res or not all(os.path.isfile(f) for f in res):
             raise RuntimeError('No file(s) found for pattern: %s' % pat)
 
@@ -627,8 +627,8 @@ def save(wrps, filename_func, suffices=None, write_complete_wrp=False):
 
 
 ################################################################## plotting ###
-import rendering as rnd
-import util
+from . import rendering as rnd
+from . import util
 
 
 def touch_legend_color(wrps):
@@ -800,7 +800,7 @@ def add_sample_integrals(canvas_wrps):
 ################################################### application & packaging ###
 def open_filter_load(pattern='*.root', filter_keyfunc=None):
     wrps = dir_content(pattern)
-    wrps = itertools.ifilter(filter_keyfunc, wrps)
+    wrps = filter(filter_keyfunc, wrps)
     wrps = load(wrps)
     return wrps
 
@@ -821,7 +821,7 @@ def fs_filter_sort_load(filter_keyfunc=None, sort_keys=None):
         return load(wrps)
     """
     wrps = fs_content()
-    wrps = itertools.ifilter(filter_keyfunc, wrps)
+    wrps = filter(filter_keyfunc, wrps)
     wrps = sort(wrps, sort_keys)
     return load(wrps)
 
@@ -832,7 +832,7 @@ def fs_filter_active_sort_load(filter_keyfunc=None, sort_keys=None):
     """
     wrps = fs_content()
     wrps = filter_active_samples(wrps)
-    wrps = itertools.ifilter(filter_keyfunc, wrps)
+    wrps = filter(filter_keyfunc, wrps)
     wrps = sort(wrps, sort_keys)
     return load(wrps)
 
@@ -893,7 +893,7 @@ def mc_stack_n_data_sum(wrps,
         if settings.stack_line_color:
             bkg = apply_linecolor(bkg, settings.stack_line_color)
         if data_lumi.float != 1.:
-            bkg = gen_prod(itertools.izip(bkg, itertools.repeat(data_lumi)))
+            bkg = gen_prod(zip(bkg, itertools.repeat(data_lumi)))
         try:
             if is_2d:
                 bkg_stk = gen_squash_sys_acc(bkg, op.sum)
@@ -971,7 +971,7 @@ def save_canvas_lin_log(cnvs, filename_func, log_only_1d_hists=True):
         lambda c: filename_func(c) + '_lin'
     )
     if log_only_1d_hists:
-        cnvs = itertools.ifilter(
+        cnvs = filter(
             lambda c: not any(
                 'H2' in r.type or 'H3' in r.type for r in c._renderers),
             cnvs

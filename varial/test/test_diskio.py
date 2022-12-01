@@ -2,7 +2,7 @@
 
 import os
 from ROOT import TH1F
-from test_histotoolsbase import TestHistoToolsBase
+from .test_histotoolsbase import TestHistoToolsBase
 from varial.wrappers import FileServiceAlias, HistoWrapper, WrapperWrapper
 from varial import diskio
 from varial import analysis

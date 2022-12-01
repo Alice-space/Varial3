@@ -12,7 +12,7 @@ def print_splash():
         cwd=os.path.dirname(__file__),
     ).communicate()
     import random
-    print random.choice(splashes.values()), 'version:', varial_version
+    print(random.choice(list(splashes.values())), 'version:', varial_version)
 
 
 splashes = {}

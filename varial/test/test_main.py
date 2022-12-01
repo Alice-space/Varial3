@@ -6,14 +6,14 @@ ROOT.gROOT.SetBatch()
 ROOT.gROOT.ProcessLine('gErrorIgnoreLevel = kError;')
 ROOT.TH1.AddDirectory(False)
 
-from test_diskio import suite as dio_suite
-from test_sparseio import suite as sio_suite
-from test_dbio import suite as dbi_suite
-from test_pklio import suite as pki_suite
-from test_generators import suite as gen_suite
-from test_ops import suite as ops_suite
-from test_rendering import suite as rnd_suite
-from test_tools import suite as tls_suite
+from .test_diskio import suite as dio_suite
+from .test_sparseio import suite as sio_suite
+from .test_dbio import suite as dbi_suite
+from .test_pklio import suite as pki_suite
+from .test_generators import suite as gen_suite
+from .test_ops import suite as ops_suite
+from .test_rendering import suite as rnd_suite
+from .test_tools import suite as tls_suite
 
 import doctest
 import varial.generators as gen

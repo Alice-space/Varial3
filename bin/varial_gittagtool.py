@@ -7,9 +7,9 @@ import varial.extenstions.git as git
 import sys
 
 if len(sys.argv) < 2:
-    print "Usage:"
-    print "varial_gittagtool.py <logfile_path> [<commit_msg_prefix>]"
-    print ""
+    print("Usage:")
+    print("varial_gittagtool.py <logfile_path> [<commit_msg_prefix>]")
+    print("")
     exit(-1)
 
 git.GitAdder().run()

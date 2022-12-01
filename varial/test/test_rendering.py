@@ -4,7 +4,7 @@ import os
 import ROOT
 ROOT.gROOT.SetBatch()
 
-from test_histotoolsbase import TestHistoToolsBase
+from .test_histotoolsbase import TestHistoToolsBase
 from varial.wrappers import HistoWrapper
 import varial.rendering as rnd
 import varial.diskio as diskio

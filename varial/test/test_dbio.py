@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from test_histotoolsbase import TestHistoToolsBase
+from .test_histotoolsbase import TestHistoToolsBase
 from varial import dbio
 from varial import analysis
 

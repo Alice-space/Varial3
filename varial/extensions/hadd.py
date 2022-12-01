@@ -96,7 +96,7 @@ class Hadd(varial.tools.Tool):
         # apply hadd in parallel
         n_procs = min(varial.settings.max_num_processes, len(basename_map))
         iterable = ((varial.analysis.get_current_tool_path(), bn, fs)
-                    for bn, fs in basename_map.iteritems())
+                    for bn, fs in basename_map.items())
 
         with varial.multiproc.WorkerPool(n_procs) as pool:
             for _ in pool.imap_unordered(_handle_block, iterable):

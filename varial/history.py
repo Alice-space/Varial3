@@ -3,7 +3,7 @@ import functools
 import sys
 import re
 
-import wrappers
+from . import wrappers
 
 
 class History(object):
@@ -76,7 +76,7 @@ class History(object):
         if self.kws:
             string += '\n'
             string += '\n'.join(
-                '    %s=%s,' % (k, repr(v)) for k, v in self.kws.iteritems())
+                '    %s=%s,' % (k, repr(v)) for k, v in self.kws.items())
         if string:
             return self.op + '(\n' + string + '\n)'
         else:
@@ -148,7 +148,7 @@ def track_history(func):
                     '%s\nhistory for unfinished wrapper: %s' % (
                         evalue, str(history))
                 )
-            raise etype, evalue, etb
+            raise etype(evalue).with_traceback(etb)
         ret.history = history
         return ret
     return history_tracker

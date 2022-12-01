@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import os
-from test_histotoolsbase import TestHistoToolsBase
+from .test_histotoolsbase import TestHistoToolsBase
 from varial import diskio
 from varial import sparseio
 from varial import wrappers
@@ -36,7 +36,7 @@ class TestSparseio(TestHistoToolsBase):
         read_in = sparseio.bulk_read_info_dict(self.test_dir)
 
         # verify filenames
-        for name, wrp in read_in.iteritems():
+        for name, wrp in read_in.items():
             self.assertEqual(name, self.name_func(wrp))
 
         # assert input info == output info
@@ -46,7 +46,7 @@ class TestSparseio(TestHistoToolsBase):
                          ).pretty_writeable_lines())
                         for w in self.test_wrps)
         dict_inp = dict((self.name_func(w), w.pretty_writeable_lines())
-                        for w in read_in.itervalues())
+                        for w in read_in.values())
         self.assertDictEqual(dict_out, dict_inp)
 
 

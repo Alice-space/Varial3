@@ -10,14 +10,14 @@ Only generator modules are provided.
 
 
 from ROOT import TFile
-import cPickle
+import pickle
 import os
 
-import settings  # init ROOT first
-import generators
-import analysis
-import wrappers
-import monitor
+from . import settings  # init ROOT first
+from . import generators
+from . import analysis
+from . import wrappers
+from . import monitor
 
 
 _rootfile = '_varial_rootobjects.root.rt'
@@ -34,7 +34,7 @@ def bulk_read_info_dict(dir_path=None):
         return {}
 
     with open(infofile) as f:
-        res = cPickle.load(f)
+        res = pickle.load(f)
     assert(type(res) == dict)
     for key in res:
         res[key] = wrappers.Wrapper(**res[key])
@@ -68,14 +68,14 @@ def bulk_write(wrps, name_func, dir_path='', suffices=None, linlog=False):
 
     # write out info
     info = dict((name, w.all_writeable_info())
-                for name, w in wrps_dict.iteritems())
+                for name, w in wrps_dict.items())
     with open(infofile, 'w') as f_info:
-        cPickle.dump(info, f_info)
+        pickle.dump(info, f_info)
 
     # write out root file
     f_root = TFile.Open(rootfile, 'RECREATE')
     f_root.cd()
-    for name, w in wrps_dict.iteritems():
+    for name, w in wrps_dict.items():
         dirfile = f_root.mkdir(name, name)
         dirfile.cd()
         w.obj.Write(name)
@@ -87,7 +87,7 @@ def bulk_write(wrps, name_func, dir_path='', suffices=None, linlog=False):
         if suffix == '.root':
             continue
 
-        for name, w in wrps_dict.iteritems():
+        for name, w in wrps_dict.items():
 
             # root will not store filenames with '[]' correctly. fix:
             alt_name = name.replace('[', '(').replace(']', ')')
@@ -110,4 +110,4 @@ def bulk_write(wrps, name_func, dir_path='', suffices=None, linlog=False):
                 if alt_name != name:
                     os.rename(img_path+suffix, good_path+suffix)
 
-    return wrps_dict.values()
+    return list(wrps_dict.values())

@@ -19,8 +19,8 @@ import os
 
 
 ################################################################### samples ###
-import settings
-import wrappers
+from . import settings
+from . import wrappers
 active_samples = []  # list of samplenames
 all_samples = {}
 data_lumi_sum_value = None
@@ -29,7 +29,7 @@ def samples():
     """Returns a dict of all MC samples."""
     return dict(
         (k, v)
-        for k, v in all_samples.iteritems()
+        for k, v in all_samples.items()
         if k in active_samples
     )
 
@@ -38,7 +38,7 @@ def mc_samples():
     """Returns a dict of all MC samples."""
     return dict(
         (k, v)
-        for k, v in all_samples.iteritems()
+        for k, v in all_samples.items()
         if k in active_samples and not v.is_data
     )
 
@@ -47,7 +47,7 @@ def data_samples():
     """Returns a dict of all real data samples."""
     return dict(
         (k, v)
-        for k, v in all_samples.iteritems()
+        for k, v in all_samples.items()
         if k in active_samples and v.is_data
     )
 
@@ -58,7 +58,7 @@ def data_lumi_sum():
     if data_lumi_sum_value == None:
         data_lumi_sum_value = float(sum(
             v.lumi
-            for k, v in data_samples().iteritems()
+            for k, v in data_samples().items()
             if k in active_samples
         ))
     return data_lumi_sum_value or settings.default_data_lumi
@@ -87,7 +87,7 @@ def get_color(sample_or_legend_name, samplename=None, default=0):
     if default:
         return default
     new_color = None
-    used_colors = settings.colors.values()
+    used_colors = list(settings.colors.values())
     for col in settings.default_colors:
         if col not in used_colors:
             new_color = col
@@ -126,7 +126,7 @@ def get_stack_position(wrp):
 
 
 ################################################ result / folder management ###
-import util
+from . import util
 
 cwd = settings.varial_working_dir
 _tool_stack = []
@@ -260,7 +260,7 @@ def lookup_children_names(key):
     """
     res = _lookup(key)
     if res:
-        return res.children.keys()
+        return list(res.children.keys())
 
 
 def lookup_tool(abs_path):
@@ -291,16 +291,16 @@ def lookup_tool(abs_path):
 
 def print_tool_tree():
     """Print all tools the ran or were reused."""
-    print '='*80
-    print 'Tools available through analysis.lookup:'
-    print '+', results_base.name
+    print('='*80)
+    print('Tools available through analysis.lookup:')
+    print('+', results_base.name)
     for rname in sorted(results_base.children):
         _print_tool_tree(results_base.children[rname], 0)
-    print '='*80
+    print('='*80)
 
 
 def _print_tool_tree(res, indent):
-    print '    ' + '|   '*indent + '+', res.name
+    print('    ' + '|   '*indent + '+', res.name)
     for rname in sorted(res.children):
         _print_tool_tree(res.children[rname], indent + 1)
 

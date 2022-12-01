@@ -12,11 +12,11 @@ from varial import wrappers
 
 
 def show_git_stat_and_log():
-    print 'Found the following UNSTAGED changes in the code:'
+    print('Found the following UNSTAGED changes in the code:')
     os.system('git diff --stat')
-    print 'Found the following STAGED changes in the code:'
+    print('Found the following STAGED changes in the code:')
     os.system('git diff --cached --stat')
-    print 'Last 5 commits:'
+    print('Last 5 commits:')
     os.system('git log --oneline -4')
 
 
@@ -39,7 +39,7 @@ class GitAdder(Tool):
                 'changes in index!')
             last_commit_hash = '-2'
         if staged_changes:
-            run_gittagger = raw_input('WARNING Staged changes in working '
+            run_gittagger = input('WARNING Staged changes in working '
                 'directory found! To continue without staging, press Enter, '
                 'to continue and stage new changes type "y" or "yes" '
                 '(To abort kill process): ')
@@ -82,14 +82,14 @@ class GitTagger(Tool):
         is_dict = lambda obj: isinstance(obj, dict)
         new_tool = 0
         for tool1 in dict1:
-            if tool1 in dict2.keys():
+            if tool1 in list(dict2.keys()):
                 if is_dict(dict1[tool1]) and is_dict(dict2[tool1]):
                     new_tool = self.compare_tool_tree(dict1[tool1],
                                                       dict2[tool1])
                     if new_tool == -1:
                         return new_tool
                 elif is_dict(dict1[tool1]) != is_dict(dict2[tool1]):  # xor
-                    replace_tool = raw_input(
+                    replace_tool = input(
                         'WARNING: two tools with same name but not of same '
                         'class (i.e. Tool or ToolChain) found! To replace old '
                         'tool, type "yes", to abort press Enter: ')
@@ -137,7 +137,7 @@ class GitTagger(Tool):
             'git rev-parse --verify HEAD', shell=True)[:-2]
         found_hash = self.check_commit_hash(self.log_data, previous_commit_hash)
         if not found_hash:
-            commit_msg = raw_input('Commit hash from last commit not found in '
+            commit_msg = input('Commit hash from last commit not found in '
                 'log file! If you want to make a new commit (and replace the '
                 'commit hashs of the latest commit), type a commit message; if '
                 'you want to abort, press Enter: ')
@@ -156,7 +156,7 @@ class GitTagger(Tool):
         return new_commit_hash
 
     def new_commit(self, message=''):
-        commit_msg = raw_input(message)
+        commit_msg = input(message)
         if commit_msg == '':
             self.message('Not committed.')
             return -1
@@ -193,7 +193,7 @@ class GitTagger(Tool):
             'git rev-parse --verify HEAD', shell=True)
         if (last_stored_commit.commit_hash != latest_commit_hash and
             last_stored_commit.commit_hash != '-1'):
-            want_continue = raw_input(
+            want_continue = input(
                 'WARNING discrepancy in staging area before and after running '
                 'the analysis found! It is highly encouraged not to commit in '
                 'order not to mess up your GitTagger log file!')
@@ -222,7 +222,7 @@ class GitTagger(Tool):
                 return
             else:
                 show_git_stat_and_log()
-                commit_msg = raw_input(
+                commit_msg = input(
                     'No new Tool found, want to amend commit? '
                     'Press Enter if you do not want to amend; '
                     'type "amend", "y" or "yes" to amend and keep the old '

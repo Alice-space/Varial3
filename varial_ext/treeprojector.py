@@ -47,13 +47,13 @@ class TreeProjectorBase(varial.tools.Tool):
 
         assert filenames, 'dict(sample -> list of files), must not be empty'
         assert isinstance(filenames, dict), 'dict(sample -> list of files)'
-        for sample, fnames in filenames.items():
+        for sample, fnames in list(filenames.items()):
             if not fnames:
                 self.message('WARNING no files for sample %s in %s'
                              % (sample, self.name))
                 del filenames[sample]
 
-        self.samples = filenames.keys()
+        self.samples = list(filenames.keys())
         assert self.samples, 'ERROR no samples to be plotted (%s)' % self.name
 
     def reuse(self, _=False):
@@ -107,7 +107,7 @@ class TreeProjector(TreeProjectorBase):
             if isinstance(weight, dict):
                 weight = weight[sample]
             res = self.prepare_mapiter(selection, weight, sample)
-            res = itertools.imap(mr.map_projection_per_file, res)
+            res = map(mr.map_projection_per_file, res)
             res = itertools.chain.from_iterable(res)
             res = mr.reduce_projection(res, self.params)
             res = list(res)
@@ -194,7 +194,7 @@ class TreeProjectorFileBased(TreeProjectorBase):
 
         n_procs = varial.settings.max_num_processes
         res = ((varial.analysis.get_current_tool_path(), sample, f)
-               for sample, files in self.filenames.iteritems()
+               for sample, files in self.filenames.items()
                for f in files)
 
         with varial.multiproc.WorkerPool(n_procs) as pool:

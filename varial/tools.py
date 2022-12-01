@@ -34,22 +34,22 @@ import shutil
 import glob
 import os
 
-import generators as gen
-import analysis
-import wrappers
-import pklio
+from . import generators as gen
+from . import analysis
+from . import wrappers
+from . import pklio
 
-from toolinterface import \
+from .toolinterface import \
     Tool, \
     ToolChain, \
     ToolChainIndie, \
     ToolChainVanilla, \
     ToolChainParallel
-from plotter import \
+from .plotter import \
     Plotter, \
     RootFilePlotter, \
     mk_rootfile_plotter
-from webcreator import \
+from .webcreator import \
     WebCreator
 
 
@@ -88,7 +88,7 @@ class UserInteraction(Tool):
             self.message('INFO Input will be evaluated as python code.')
         if self.can_reuse:
             self.message('INFO Input might be reused.')
-        res = raw_input(self.prompt+' ')
+        res = input(self.prompt+' ')
         if self.eval_result:
             res = literal_eval(res)
         self.result = wrappers.Wrapper(input=res)
@@ -130,14 +130,14 @@ class HistoLoader(Tool):
     def run(self):
         if self.pattern:
             wrps = gen.dir_content(self.pattern)
-            wrps = itertools.ifilter(self.filter_keyfunc, wrps)
+            wrps = filter(self.filter_keyfunc, wrps)
             wrps = gen.load(wrps)
         elif self.input_result_path:
             wrps = self.lookup_result(self.input_result_path, [])
             if not wrps:
                 raise RuntimeError(
                     'ERROR no histograms on path: ' + self.input_result_path)
-            wrps = itertools.ifilter(self.filter_keyfunc, wrps)
+            wrps = filter(self.filter_keyfunc, wrps)
         else:
             wrps = gen.fs_filter_active_sort_load(self.filter_keyfunc)
 

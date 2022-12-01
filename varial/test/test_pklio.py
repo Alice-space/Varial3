@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 
-import cPickle
+import pickle
 import os
-from test_histotoolsbase import TestHistoToolsBase
+from .test_histotoolsbase import TestHistoToolsBase
 from varial import pklio
 from varial import analysis
 
@@ -24,7 +24,7 @@ class TestPklio(TestHistoToolsBase):
         self.assertTrue(os.path.exists(self.test_dir + '/data.pkl'))
         if os.path.exists(self.test_dir + '/data.pkl'):
             with open(self.test_dir + '/data.pkl') as f:
-                obj = cPickle.load(f)
+                obj = pickle.load(f)
             self.assertTrue(type(obj) == dict)
             self.assertIn(self.test_wrp.name, obj)
 

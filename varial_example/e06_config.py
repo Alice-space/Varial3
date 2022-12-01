@@ -15,7 +15,7 @@ ROOT.gROOT.ProcessLine('gErrorIgnoreLevel = kError;')
 import varial.main
 
 # these modules are also examples
-import e03_make_a_toolchain         # my normalization tool
+from . import e03_make_a_toolchain         # my normalization tool
 
 # list of all samples
 samples = ['TTbar', 'WJets', 'SingleT', 'QCD']

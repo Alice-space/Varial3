@@ -34,7 +34,7 @@ def integral_and_corr_error(th_hist):
     ntgrl = th_hist.Integral()
     err_sum = sum(
         th_hist.GetBinError(i+1)
-        for i in xrange(
+        for i in range(
             th_hist.GetBin(
                 th_hist.GetNbinsX(), th_hist.GetNbinsY(), th_hist.GetNbinsZ()))
     )
@@ -46,8 +46,8 @@ def random_hex_str():
 
 
 def project_items(keyfunc, items):
-    positive = list(itertools.ifilter(keyfunc, items))
-    negative = list(itertools.ifilterfalse(keyfunc, items))
+    positive = list(filter(keyfunc, items))
+    negative = list(itertools.filterfalse(keyfunc, items))
     return positive, negative
 
 
@@ -94,29 +94,29 @@ def deepish_copy(obj):
     if isinstance(obj, tuple):
         return tuple(deepish_copy(o) for o in obj)
     if isinstance(obj, dict):
-        return dict((k, deepish_copy(v)) for k, v in obj.iteritems())
+        return dict((k, deepish_copy(v)) for k, v in obj.items())
     if isinstance(obj, set):
         return set(deepish_copy(o) for o in obj)
     if hasattr(obj, '__dict__'):
         cp = copy.copy(obj)
         cp.__dict__.clear()
-        for k, v in obj.__dict__.iteritems():
+        for k, v in obj.__dict__.items():
             cp.__dict__[k] = deepish_copy(v)
         return cp
     return obj
 
 
 def setup_legendnames_from_files(pattern):
-    import generators as gen  # hide circular dependency
+    from . import generators as gen  # hide circular dependency
     filenames = gen.resolve_file_pattern(pattern)
 
     # try the sframe way:
     lns = list(n.split('.') for n in filenames if isinstance(n, str))
     if all(len(l) == 5 for l in lns):
-        res = dict((f, l[3]) for f, l in itertools.izip(filenames, lns))
+        res = dict((f, l[3]) for f, l in zip(filenames, lns))
 
         # make sure the legend names are all different
-        if len(set(l for l in res.itervalues())) == len(res):
+        if len(set(l for l in res.values())) == len(res):
             return res
 
     # not sframe but only one file: return
@@ -127,14 +127,14 @@ def setup_legendnames_from_files(pattern):
     lns = list(os.path.splitext(f)[0] for f in filenames)
     # shorten strings from front
     while all(n[0] == lns[0][0] and len(n) > 5 for n in lns):
-        for i in xrange(len(lns)):
+        for i in range(len(lns)):
             lns[i] = lns[i][1:]
 
     # shorten strings from back
     while all(n[-1] == lns[0][-1] and len(n) > 5 for n in lns):
-        for i in xrange(len(lns)):
+        for i in range(len(lns)):
             lns[i] = lns[i][:-1]
-    return dict((f, l) for f, l in itertools.izip(filenames, lns))
+    return dict((f, l) for f, l in zip(filenames, lns))
 
 
 #################################################################### Switch ###

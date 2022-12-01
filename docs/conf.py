@@ -41,8 +41,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Varial'
-copyright = u'2015, Heiner Tholen'
+project = 'Varial'
+copyright = '2015, Heiner Tholen'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -186,8 +186,8 @@ latex_elements = {
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Varial.tex', u'Varial Documentation',
-   u'Heiner Tholen', 'manual'),
+  ('index', 'Varial.tex', 'Varial Documentation',
+   'Heiner Tholen', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -216,8 +216,8 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'varial', u'Varial Documentation',
-     [u'Heiner Tholen'], 1)
+    ('index', 'varial', 'Varial Documentation',
+     ['Heiner Tholen'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -230,8 +230,8 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Varial', u'Varial Documentation',
-   u'Heiner Tholen', 'Varial',
+  ('index', 'Varial', 'Varial Documentation',
+   'Heiner Tholen', 'Varial',
    'Toolkit for analysis with ROOT. No gui, just library.',
    'Miscellaneous'),
 ]

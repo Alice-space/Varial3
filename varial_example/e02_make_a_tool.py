@@ -37,7 +37,7 @@ class MyHistoNormalizer(tools.Tool):
         # you could convert it to a list with my_hists = list(my_hists)
 
         # filter them
-        my_hists = itertools.ifilter(self.filter_keyfunc, my_hists)
+        my_hists = filter(self.filter_keyfunc, my_hists)
         # my_hists is again a generator of aliases
 
         # for the remaining ones: load the histograms from file

@@ -54,7 +54,7 @@ class TestHistoToolsBase(unittest.TestCase):
             "tt gamma",
             "z jets"
         ]
-        analysis.active_samples = analysis.all_samples.keys()
+        analysis.active_samples = list(analysis.all_samples.keys())
 
         # create a test wrapper
         h1 = TH1I("h1", "H1", 2, .5, 4.5)

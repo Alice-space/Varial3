@@ -11,7 +11,7 @@ and sorting these, the histogram objects can be loaded with the ``diskio``
 module.
 """
 
-import settings  # init ROOT first
+from . import settings  # init ROOT first
 from ROOT import TH1, TH1D, TH2D, TH3D, THStack, TGraph, TCanvas, TObject
 from ast import literal_eval
 
@@ -39,7 +39,7 @@ class WrapperBase(object):
         """Like all_info, but removes root objects."""
         return dict(
             (k, v)
-            for k, v in self.__dict__.iteritems()
+            for k, v in self.__dict__.items()
             if k[0] != '_' and not isinstance(v, TObject)
         )
 
@@ -439,7 +439,7 @@ class FileServiceWrapper(Wrapper):
     def is_empty(self):
         return not any(
             isinstance(obj, TH1)
-            for obj in self.__dict__.itervalues()
+            for obj in self.__dict__.values()
         )
 
 if __name__ == '__main__':

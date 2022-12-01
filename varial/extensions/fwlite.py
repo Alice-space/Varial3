@@ -57,7 +57,7 @@ class Fwlite(toolinterface.Tool):
         # check if all files are done
         if not all(
             f in files_done[smp.name]
-            for smp in samples.itervalues()
+            for smp in samples.values()
             for f in smp.input_files
         ):
             self.message('INFO Not all files are done, running again.')
@@ -77,7 +77,7 @@ class Fwlite(toolinterface.Tool):
 
         # prepare proxy file / ask for execution
         self._make_proxy()
-        if not (self._not_ask_execute or settings.not_ask_execute or raw_input(
+        if not (self._not_ask_execute or settings.not_ask_execute or input(
                 "Really run fwlite jobs on these samples:\n   "
                 + ",\n   ".join(map(str, self._proxy.due_samples))
                 + ('\nusing %i cores' % settings.max_num_processes)
@@ -116,7 +116,7 @@ class Fwlite(toolinterface.Tool):
     def _make_proxy(self):
         samples = analysis.samples()
 
-        for smpl in samples.itervalues():
+        for smpl in samples.values():
             if not smpl.input_files:
                 self.message(
                     self.name,
@@ -132,22 +132,22 @@ class Fwlite(toolinterface.Tool):
         self._proxy.do_profiling = settings.fwlite_profiling
         self._proxy.event_files = dict(
             (s.name, s.input_files)
-            for s in samples.itervalues()
+            for s in samples.values()
         )
 
         # if a result was deleted, remove all associated files from files_done
         files_done = self._proxy.files_done
         results = self._proxy.results
-        for res in results.keys():
+        for res in list(results.keys()):
             if not exists(join(self.cwd, '%s.info' % res)):
                 del results[res]
                 smpl = res.split('!')[0]
                 if smpl in files_done:
                     del files_done[smpl]
 
-        due_samples = samples.keys()
+        due_samples = list(samples.keys())
         self._proxy.due_samples = due_samples
-        for res in results.keys():
+        for res in list(results.keys()):
             smpl = res.split('!')[0]
             if smpl in due_samples:
                 if all(

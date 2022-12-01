@@ -6,7 +6,7 @@ ROOT.gROOT.SetBatch(True)
 ROOT.gROOT.ProcessLine('gErrorIgnoreLevel = kError;')
 
 if len(sys.argv) < 2:
-    print """
+    print("""
 Usage:
 varial_plotter.py <signal-files>
                   [--bkg <background-files>]
@@ -29,7 +29,7 @@ Options:
 --rebin         rebin histograms to have a maximum of 42 bins
 --theta_file    plot systematic uncertainties from a theta-file
 --pdf           produces pdf files as well
-"""
+""")
     exit(-1)
 
 # grab filenames and options
@@ -60,14 +60,14 @@ for a in args:
         current_coll.append(a)
 all_input = sig + bkg + dat + psu
 
-print 'signal-files:        ', sig
-print 'background-files:    ', bkg
-print 'data files:          ', dat
-print 'pseudo-data files:   ', psu
+print('signal-files:        ', sig)
+print('background-files:    ', bkg)
+print('data files:          ', dat)
+print('pseudo-data files:   ', psu)
 if n_bins_max:
-    print '- rebinning to a maximum of 42 bins'
+    print('- rebinning to a maximum of 42 bins')
 if norm_to_int:
-    print '- normalizing to integral'
+    print('- normalizing to integral')
 
 # setup varial
 import varial.tools

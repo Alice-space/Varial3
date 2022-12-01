@@ -4,11 +4,11 @@ Store wrappers into a sqlite database.
 Please checkout the :ref:`diskio-module` documentation for more information.
 """
 
-import cPickle
+import pickle
 import sqlite3
 
-import settings
-import analysis
+from . import settings
+from . import analysis
 
 
 _db_conn = None
@@ -67,7 +67,7 @@ def write(wrp, name=None):
     c.execute('DELETE FROM analysis WHERE path=?', (path,))
     c.execute(
         'INSERT INTO analysis VALUES (?,?)',
-        (path, cPickle.dumps(wrp))
+        (path, pickle.dumps(wrp))
     )
     _db_conn.commit()
 
@@ -81,7 +81,7 @@ def read(name):
     c.execute('SELECT data FROM analysis WHERE path=?', (path,))
     data = c.fetchone()
     if data:
-        return cPickle.loads(str(data[0]))
+        return pickle.loads(str(data[0]))
     else:
         raise RuntimeError('Data not found in db: %s' % path)
 

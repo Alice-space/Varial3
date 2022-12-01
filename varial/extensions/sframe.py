@@ -4,7 +4,7 @@ Host sframe processes in a toolchain.
 
 import xml.etree.cElementTree as ElementTree
 import subprocess
-import StringIO
+import io
 import glob
 import time
 import os
@@ -70,7 +70,7 @@ class SFrame(toolinterface.Tool):
                 stdout=subprocess.PIPE
             )
             output = proc.communicate()[0]
-            tree = ElementTree.parse(StringIO.StringIO(output))
+            tree = ElementTree.parse(io.StringIO(output))
             self.xml_tree_callback(tree)
             with open(os.path.join(self.cwd, self.private_conf), "w") as f:
                 f.write(self.xml_doctype)
@@ -137,7 +137,7 @@ class SFrame(toolinterface.Tool):
 
         try:
             self.prepare_run_conf()
-        except RuntimeError, e:
+        except RuntimeError as e:
             self.message(
                 'WARNING caught RuntimeError from making conf:\n'
                 + e.message

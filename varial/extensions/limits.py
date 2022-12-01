@@ -4,7 +4,7 @@ Limit derivation with theta: http://theta-framework.org
 
 from array import array
 import collections
-import cPickle
+import pickle
 import numpy
 import ROOT
 import glob
@@ -163,7 +163,7 @@ class ThetaLimits(varial.tools.Tool):
         # write manually
         f = ROOT.TFile.Open(wrp.file_path, "RECREATE")
         f.cd()
-        for key, value in wrp.__dict__.iteritems():
+        for key, value in wrp.__dict__.items():
             if isinstance(value, ROOT.TH1):
                 value.SetName(key)
                 value.Write()
@@ -209,7 +209,7 @@ class ThetaLimits(varial.tools.Tool):
             if self.pvalue_func:
                 self.message('INFO calculating p-value')
                 p_vals = self.pvalue_func(self.model)
-                for z_dict in p_vals.itervalues():
+                for z_dict in p_vals.values():
                     z = z_dict['Z']
                     if isinstance(z, collections.Iterable):
                         z = numpy.median(z)
@@ -238,7 +238,7 @@ class ThetaLimits(varial.tools.Tool):
                 self.tex_table_mod(
                     summary['rate_table'].tex()))
 
-        for proc, table in summary['sysrate_tables'].iteritems():
+        for proc, table in summary['sysrate_tables'].items():
             with open(self.cwd + 'sysrate_tables_%s.tex' % proc, 'w') as f:
                 f.write(
                     self.tex_table_mod(
@@ -256,9 +256,9 @@ class ThetaLimits(varial.tools.Tool):
             # res_obs_yerrors=getattr(res_obs, 'yerrors', []),
 
             # in order to access details, one must unpickle.
-            res_exp=cPickle.dumps(res_exp),
-            res_obs=cPickle.dumps(res_obs),
-            summary=cPickle.dumps(summary),
+            res_exp=pickle.dumps(res_exp),
+            res_obs=pickle.dumps(res_obs),
+            summary=pickle.dumps(summary),
             postfit_vals=postfit,
             p_vals=p_vals,
             selection=self.selection,
@@ -282,7 +282,7 @@ class ThetaPostFitPlot(varial.tools.Tool):
     def prepare_post_fit_items(post_fit_dict):
         return list(
             (name, val_err)
-            for name, (val_err,) in sorted(post_fit_dict.iteritems())
+            for name, (val_err,) in sorted(post_fit_dict.items())
             if name not in ('__nll')
         )
 
@@ -306,7 +306,7 @@ class ThetaPostFitPlot(varial.tools.Tool):
     def prepare_band_graphs(n_items):
         g68 = ROOT.TGraph(2*n_items+7)
         g95 = ROOT.TGraph(2*n_items+7)
-        for a in xrange(0, n_items+3):
+        for a in range(0, n_items+3):
             g68.SetPoint(a, -1, a)
             g95.SetPoint(a, -2, a)
             g68.SetPoint(a+1+n_items+2, 1, n_items+2-a)
@@ -374,7 +374,7 @@ class ThetaPostFitPlot(varial.tools.Tool):
     def run(self):
         theta_res = self.lookup_result(self.input_path)
         cnvs = (self.mk_canvas(sig, pfd)
-                for sig, pfd in theta_res.postfit_vals.iteritems())
+                for sig, pfd in theta_res.postfit_vals.items())
 
         cnvs = varial.sparseio.bulk_write(cnvs, lambda c: c.name)
         self.result = list(cnvs)
@@ -400,9 +400,9 @@ class LimitGraphs(varial.tools.Tool):
     def prepare_sigma_band_graph(self, x_list, sig_low, sig_high):
         n_items = len(x_list)
         sig_graph = ROOT.TGraph(2*n_items)
-        for i in xrange(0, n_items):
+        for i in range(0, n_items):
             sig_graph.SetPoint(i, x_list[i], sig_low[i])
-        for i in xrange(0, n_items):
+        for i in range(0, n_items):
             sig_graph.SetPoint(i+n_items, x_list[n_items-i-1],
                 sig_high[n_items-i-1])
         return sig_graph
@@ -447,7 +447,7 @@ class LimitGraphs(varial.tools.Tool):
     def make_exp_graph(self, grp):
         if len(grp) == 1:
             wrp = grp[0]
-            theta_res_exp = cPickle.loads(wrp.res_exp)
+            theta_res_exp = pickle.loads(wrp.res_exp)
             x_list = theta_res_exp.x
             y_list = theta_res_exp.y
             color = varial.analysis.get_color(wrp.selection or wrp.name, default=1)
@@ -460,7 +460,7 @@ class LimitGraphs(varial.tools.Tool):
             wrps = grp.wrps
             wrps = sorted(wrps, key=lambda w: w.mass_points[0])
             for wrp in wrps:
-                theta_res_exp = cPickle.loads(wrp.res_exp)
+                theta_res_exp = pickle.loads(wrp.res_exp)
                 x = theta_res_exp.x
                 y = theta_res_exp.y
                 assert len(x)==1 and len(y)==1, 'Not exactly one mass point in limit wrapper!'
@@ -475,7 +475,7 @@ class LimitGraphs(varial.tools.Tool):
     def make_obs_graph(self, grp):
         if len(grp) == 1:
             wrp = grp[0]
-            theta_res_obs = cPickle.loads(wrp.res_obs)
+            theta_res_obs = pickle.loads(wrp.res_obs)
             x_list = theta_res_obs.x
             y_list = theta_res_obs.y
             color = varial.analysis.get_color(wrp.selection or wrp.name, default=1)
@@ -488,7 +488,7 @@ class LimitGraphs(varial.tools.Tool):
             wrps = grp.wrps
             wrps = sorted(wrps, key=lambda w: w.mass_points[0])
             for wrp in wrps:
-                theta_res_obs = cPickle.loads(wrp.res_obs)
+                theta_res_obs = pickle.loads(wrp.res_obs)
                 x = theta_res_obs.x
                 y = theta_res_obs.y
                 assert len(x)==1 and len(y)==1, 'Not exactly one mass point in limit wrapper!'
@@ -504,7 +504,7 @@ class LimitGraphs(varial.tools.Tool):
         assert type(ind) == int and (ind == 1 or ind == 2)
         if len(grp) == 1:
             wrp = grp[0]
-            theta_res = cPickle.loads(wrp.res_exp)
+            theta_res = pickle.loads(wrp.res_exp)
             x_list = theta_res.x
             sigma_band_low = theta_res.bands[ind-1][0]
             sigma_band_high = theta_res.bands[ind-1][1]
@@ -517,7 +517,7 @@ class LimitGraphs(varial.tools.Tool):
             wrps = grp.wrps
             wrps = sorted(wrps, key=lambda w: w.mass_points[0])
             for wrp in wrps:
-                theta_res = cPickle.loads(wrp.res_exp)
+                theta_res = pickle.loads(wrp.res_exp)
                 x = theta_res.x
                 sigma_low = theta_res.bands[ind-1][0]
                 sigma_high = theta_res.bands[ind-1][1]

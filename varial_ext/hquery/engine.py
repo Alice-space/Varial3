@@ -1,13 +1,13 @@
 """hQuery"""
 
 import multiprocessing as mp
-import Queue
-import html
+import queue
+from . import html
 import ast
 
 
 def _start_backend(kws, q_in, q_out):
-    from backend import HQueryBackend
+    from .backend import HQueryBackend
     HQueryBackend(kws, q_in, q_out).start()
 
 
@@ -55,7 +55,7 @@ class HQueryEngine(object):
         self.backend_proc.start()
         try:
             msg = self.backend_q_out.get(timeout=60)
-        except Queue.Empty:
+        except queue.Empty:
             msg = ''
         if msg != 'backend alive':
             raise RuntimeError('backend did not start after 60 seconds')
@@ -77,7 +77,7 @@ class HQueryEngine(object):
         while True:
             try:
                 item = self.backend_q_out.get(block, timeout)
-            except Queue.Empty:
+            except queue.Empty:
                 break
 
             if item == 'task done' and self.status == 'task pending':

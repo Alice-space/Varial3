@@ -29,7 +29,7 @@ def map_projection_spark(args, ssw, params):
     params = dict(params)
     params['weight'] = weight[sample] if isinstance(weight, dict) else weight
     params['selection'] = selection
-    histos = params['histos'].keys()
+    histos = list(params['histos'].keys())
 
     map_iter = (res
                 for h in histos
@@ -77,7 +77,7 @@ class SparkTreeProjector(TreeProjectorBase):
             self.message('INFO initializing root files.')
             inputs = list(
                 (sample, f)
-                for sample, filenames in self.filenames.iteritems()
+                for sample, filenames in self.filenames.items()
                 for f in filenames
             )
             rdd = spark_context.parallelize(inputs)

@@ -4,11 +4,11 @@ Store wrappers into a pkl object for every directory.
 Please checkout the :ref:`diskio-module` documentation for more information.
 """
 
-import cPickle
+import pickle
 import os
 
-import analysis
-import monitor
+from . import analysis
+from . import monitor
 
 
 _current_path = ''
@@ -24,7 +24,7 @@ def _write_out():
         return
 
     with open(os.path.join(_current_path, 'data.pkl'), 'w') as f:
-        cPickle.dump(_current_pack, f)
+        pickle.dump(_current_pack, f)
 
     _changed = False
 
@@ -47,7 +47,7 @@ def _sync(path):
     else:
         with open(data_path) as f:
             try:
-                _current_pack = cPickle.load(f)
+                _current_pack = pickle.load(f)
             except Exception as e:
                 msg = 'ERROR with file: %s' % data_path
                 e.message += msg

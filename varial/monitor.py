@@ -2,7 +2,7 @@
 Interface for system outputs.
 """
 
-import settings
+from . import settings
 import time
 import sys
 

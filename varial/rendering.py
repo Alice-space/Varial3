@@ -8,7 +8,7 @@ ROOT-objects. The 'Renderers' extend the functionality of wrappers for drawing.
 
 ################################################################# renderers ###
 import collections
-import wrappers
+from . import wrappers
 import ROOT
 from math import sqrt
 
@@ -52,7 +52,7 @@ class HistoRenderer(Renderer, wrappers.HistoWrapper):
 
         if self.histo_sys_err:                          # calculate total error
             nom, sys, tot = self.histo, self.histo_sys_err, self.histo.Clone()
-            for i in xrange(tot.GetNbinsX()+2):
+            for i in range(tot.GetNbinsX()+2):
                 nom_val = nom.GetBinContent(i)
                 nom_err = nom.GetBinError(i) or 1e-10   # prevent 0-div-error
                 sys_val = sys.GetBinContent(i)
@@ -102,7 +102,7 @@ class HistoRenderer(Renderer, wrappers.HistoWrapper):
             try:
                 min_val = min(
                     histo.GetBinContent(i)
-                    for i in xrange(nbins + 1)
+                    for i in range(nbins + 1)
                     if histo.GetBinContent(i) > 1e-10
                 )
             except ValueError:
@@ -181,9 +181,9 @@ class GraphRenderer(Renderer, wrappers.GraphWrapper):
 
 
 ################################################# canvas-building functions ###
-import settings
-import history
-import util
+from . import settings
+from . import history
+from . import util
 
 
 def _renderize(wrp):
@@ -291,7 +291,7 @@ def draw_content(wrp, _):
 
 
 ##################################################### canvas customizations ###
-import operations as op
+from . import operations as op
 
 
 class PostBuildFuncWithSetup(object):
@@ -501,9 +501,9 @@ def _bottom_plot_y_bounds(wrp, bottom_obj, par):
     elif isinstance(bottom_obj, ROOT.TH1):
         n_bins = bottom_obj.GetNbinsX()
         mini = min(bottom_obj.GetBinContent(i+1)
-                   - bottom_obj.GetBinError(i+1) for i in xrange(n_bins)) - .1
+                   - bottom_obj.GetBinError(i+1) for i in range(n_bins)) - .1
         maxi = max(bottom_obj.GetBinContent(i+1)
-                   + bottom_obj.GetBinError(i+1) for i in xrange(n_bins)) + .1
+                   + bottom_obj.GetBinError(i+1) for i in range(n_bins)) + .1
         if mini < y_min or maxi > y_max:
             y_min, y_max = max(y_min, mini), min(y_max, maxi)
             bottom_obj.GetYaxis().SetRangeUser(y_min, y_max)
@@ -515,7 +515,7 @@ def _bottom_plot_fix_bkg_err_values(wrp, histo):
     # errors are not plottet, if the bin center is out of the y bounds.
     # this function fixes it.
     y_min, y_max = wrp.y_min_max
-    for i in xrange(1, histo.GetNbinsX() + 1):
+    for i in range(1, histo.GetNbinsX() + 1):
         val = histo.GetBinContent(i)
         new_val = 0
         if val <= y_min:
@@ -602,7 +602,7 @@ def mk_ratio_plot_func(**outer_kws):
 
 # util functions for err_ratio_plot_func's:
 def _err_ratio_util_mk_bkg_errors(histo, ref_histo):
-    for i in xrange(1, histo.GetNbinsX() + 1):
+    for i in range(1, histo.GetNbinsX() + 1):
         val = histo.GetBinContent(i)
         ref_val = ref_histo.GetBinContent(i)
         err = histo.GetBinError(i)
@@ -660,7 +660,7 @@ def mk_split_err_ratio_plot_func(**outer_kws):
         data_hist.Sumw2(False)                          # should be set elsewhere!
         gtop = ROOT.TGraphAsymmErrors(data_hist)
         gbot = ROOT.TGraphAsymmErrors(div_hist)
-        for i in xrange(mc_histo_no_err.GetNbinsX(), 0, -1):
+        for i in range(mc_histo_no_err.GetNbinsX(), 0, -1):
             mc_val = mc_histo_no_err.GetBinContent(i)
             if mc_val:
                 e_up = data_hist.GetBinErrorUp(i)
@@ -703,7 +703,7 @@ def mk_split_err_ratio_plot_func(**outer_kws):
         div_hist = data_hist.Clone()
         div_hist.GetXaxis().SetCanExtend(0)
         div_hist.Sumw2()
-        for i in xrange(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
+        for i in range(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
             mc_histo_no_err.SetBinError(i, 0.)
             if not div_hist.GetBinContent(i):
                 div_hist.SetBinError(i, 1.)
@@ -722,7 +722,7 @@ def mk_split_err_ratio_plot_func(**outer_kws):
             mk_poisson_errs_graph(cnv_wrp, data_rnd, div_hist, mc_histo_no_err, par)
 
         # ugly fix: move zeros out of range
-        for i in xrange(1, mc_histo_no_err.GetNbinsX()+1):
+        for i in range(1, mc_histo_no_err.GetNbinsX()+1):
             if not (div_hist.GetBinContent(i) or div_hist.GetBinError(i)):
                 div_hist.SetBinContent(i, -500)
 
@@ -764,7 +764,7 @@ def mk_split_err_multi_ratio_plot_func(**outer_kws):
         # overlaying ratio histogram
         mc_histo_no_err = bkg_rnd.histo.Clone()
         mc_histo_no_err.GetXaxis().SetCanExtend(0)
-        for i in xrange(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
+        for i in range(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
             mc_histo_no_err.SetBinError(i, 0.)
 
         div_hists = list(sr.histo.Clone() for sr in sig_rnds)
@@ -773,12 +773,12 @@ def mk_split_err_multi_ratio_plot_func(**outer_kws):
             div_hist.GetXaxis().SetCanExtend(0)
             div_hist.Sumw2()
 
-            for i in xrange(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
+            for i in range(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
                 if not div_hist.GetBinContent(i):
                     div_hist.SetBinError(i, 1.)
             div_hist.Add(mc_histo_no_err, -1)
             div_hist.Divide(mc_histo_no_err)
-            for i in xrange(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
+            for i in range(1, mc_histo_no_err.GetXaxis().GetNbins()+1):
                 if not div_hist.GetBinContent(i):
                     div_hist.SetBinContent(i, -500.)
 
@@ -840,7 +840,7 @@ def mk_pull_plot_func(**outer_kws):
         sigma_histo = mcee_rnd.histo.Clone()
         data_hist.SetBinErrorOption(ROOT.TH1.kPoisson)
         mc_histo.SetBinErrorOption(ROOT.TH1.kPoisson)
-        for i in xrange(mc_histo.GetNbinsX()+2):
+        for i in range(mc_histo.GetNbinsX()+2):
             sigma_histo.SetBinError(i, 0.)
             # pm stands for plusminus
             pm = 1. if data_hist.GetBinContent(i) > mc_histo.GetBinContent(i) else -1.

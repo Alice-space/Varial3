@@ -70,7 +70,7 @@ def map_projection(key_histo_filename, params, open_file=None, open_tree=None):
                 'There seems to be no tree named "%s" in file "%s"'%(
                     params['treename'], input_file))
 
-        for alias, fcn in params.get('aliases', {}).iteritems():
+        for alias, fcn in params.get('aliases', {}).items():
             if not tree.SetAlias(alias, fcn):
                 raise RuntimeError(
                     'Error in TTree::SetAlias: it did not understand %s.'%alias
@@ -128,7 +128,7 @@ def map_projection_per_file(args, open_file=None):
     :param args:    tuple(sample, filename, params), see ``map_projection`` function for more info.
     """
     sample, filename, params = args
-    histos = params['histos'].keys()
+    histos = list(params['histos'].keys())
 
     import ROOT
     open_file_local = open_file or ROOT.TFile(filename)

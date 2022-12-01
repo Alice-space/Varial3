@@ -168,11 +168,11 @@ def start(engine, no_session):
         conf['global']['server.socket_port'],
         '' if no_session else session_token
     )
-    print '='*80
-    print 'hQuery is ready at:'
-    print url.format(socket.gethostname())
-    print url.format('localhost')
-    print '='*80
+    print('='*80)
+    print('hQuery is ready at:')
+    print(url.format(socket.gethostname()))
+    print(url.format('localhost'))
+    print('='*80)
 
     # start serving
     cherrypy.quickstart(WebService(engine, no_session), '/', conf)

@@ -7,13 +7,13 @@ Furthermore, all operations are present in the form of a generator in the
 generator module. Below, an example is given for every operation.
 """
 
-import settings  # init ROOT first
+from . import settings  # init ROOT first
 
 from ROOT import THStack, TGraphAsymmErrors
 import collections
-import __builtin__
-import wrappers
-import history
+import builtins
+from . import wrappers
+from . import history
 import ctypes
 import array
 import ROOT
@@ -49,7 +49,7 @@ def add_wrp_info(wrp, **kw_funcs):
     """
     # evaluate
     kw_args = {}
-    for k, f in kw_funcs.iteritems():
+    for k, f in kw_funcs.items():
         val = f(wrp)
         kw_args[k] = val
         setattr(wrp, k, val)
@@ -358,7 +358,7 @@ def div(wrps):
     except StopIteration:
         raise TooFewWrpsError("div needs exactly two Wrappers.")
     try:
-        wrps.next()
+        next(wrps)
         raise TooManyWrpsError("div needs exactly two Wrappers.")
     except StopIteration:
         pass
@@ -584,7 +584,7 @@ def rebin(wrp, bin_bounds, norm_by_bin_width=False):
         bin_bounds
     )
     if norm_by_bin_width:
-        for i in xrange(histo.GetNbinsX()+1):
+        for i in range(histo.GetNbinsX()+1):
             factor = histo.GetBinWidth(i) / orig_bin_width
             histo.SetBinContent(i, histo.GetBinContent(i) / factor)
             histo.SetBinError(i, histo.GetBinError(i) / factor)
@@ -674,7 +674,7 @@ def trim(wrp, left=True, right=True):
     n_bins = histo.GetNbinsX()
     if type(left) == bool:
         if left:
-            for i in xrange(n_bins+1):
+            for i in range(n_bins+1):
                 if histo.GetBinContent(i):
                     left = axis.GetBinLowEdge(i)
                     break
@@ -682,7 +682,7 @@ def trim(wrp, left=True, right=True):
             left = axis.GetXmin()
     if type(right) == bool:
         if right:
-            for i in xrange(n_bins+1, 0, -1):
+            for i in range(n_bins+1, 0, -1):
                 if histo.GetBinContent(i):
                     right = axis.GetBinUpEdge(i)
                     break
@@ -809,7 +809,7 @@ def int_l(wrp, use_bin_width=False):
         )
     int_histo = wrp.histo.Clone()
     option = "width" if use_bin_width else ""
-    for i in xrange(int_histo.GetNbinsX(), 0, -1):
+    for i in range(int_histo.GetNbinsX(), 0, -1):
         error = ctypes.c_double()
         value = int_histo.IntegralAndError(1, i, error, option)
         int_histo.SetBinContent(i, value)
@@ -849,7 +849,7 @@ def int_r(wrp, use_bin_width=False):
     int_histo = wrp.histo.Clone()
     option = "width" if use_bin_width else ""
     n_bins = int_histo.GetNbinsX()
-    for i in xrange(1, 1 + n_bins):
+    for i in range(1, 1 + n_bins):
         error = ctypes.c_double()
         value = int_histo.IntegralAndError(i, n_bins, error, option)
         int_histo.SetBinContent(i, value)
@@ -870,7 +870,7 @@ def chi2(wrps, x_min=0, x_max=0):
     except StopIteration:
         raise TooFewWrpsError("chi2 needs exactly two HistoWrappers.")
     try:
-        wrps.next()
+        next(wrps)
         raise TooManyWrpsError("chi2 needs exactly two HistoWrappers.")
     except StopIteration:
         pass
@@ -897,9 +897,9 @@ def chi2(wrps, x_min=0, x_max=0):
         else:
             return 0.
 
-    chi2_val = __builtin__.sum(
+    chi2_val = builtins.sum(
         get_weight_for_bin(i)
-        for i in xrange(x_min, x_max)
+        for i in range(x_min, x_max)
     )
     info = second.all_info()
     info.update(first.all_info())
@@ -950,7 +950,7 @@ def eff(wrps, option='cl=0.683 b(1,1) mode'):
     except StopIteration:
         raise TooFewWrpsError("eff needs exactly two Wrappers.")
     try:
-        wrps.next()
+        next(wrps)
         raise TooManyWrpsError("eff needs exactly two Wrappers.")
     except StopIteration:
         pass
@@ -1072,7 +1072,7 @@ def squash_sys_sq(wrps):
 
     def get_err_hist(h, err_factor):
         w_err = h.Clone()
-        for i in xrange(w_err.GetNbinsX()+2):
+        for i in range(w_err.GetNbinsX()+2):
             w_err.SetBinContent(i, h.GetBinContent(i)
                 + h.GetBinError(i)*err_factor)
         return w_err
@@ -1085,7 +1085,7 @@ def squash_sys_sq(wrps):
         return delta
 
     def get_sqr_hist(hist):
-        for i in xrange(hist.GetNbinsX()+2):
+        for i in range(hist.GetNbinsX()+2):
             hist.SetBinContent(i, hist.GetBinContent(i)**.5)
 
     for w in wrps:                                              # histo check
@@ -1103,7 +1103,7 @@ def squash_sys_sq(wrps):
             sum_of_sq_errs_up = sys_hist.Clone()
             sum_of_sq_errs_down = sys_hist.Clone()
             min_errs = sys_hist.Clone()
-            for i in xrange(sys_hist.GetNbinsX()+2):
+            for i in range(sys_hist.GetNbinsX()+2):
                 min_errs.SetBinContent(i, 1e-10)  # make non-zero
 
         else:                                                   # collect
@@ -1121,7 +1121,7 @@ def squash_sys_sq(wrps):
 
     # average and assign errors
     # sys_hist.Scale(1./n_sys_hists)
-    for i in xrange(sys_hist.GetNbinsX()+2):
+    for i in range(sys_hist.GetNbinsX()+2):
         sys_hist.SetBinContent(i, (sum_of_sq_errs_up.GetBinContent(i)
             + sum_of_sq_errs_down.GetBinContent(i))/2.)
         sys_hist.SetBinError(i, (sum_of_sq_errs_up.GetBinContent(i)
@@ -1182,7 +1182,7 @@ def squash_sys_env(wrps):
         else:
             return w.histo.GetBinContent(i)
 
-    for i in xrange(nominal.GetNbinsX()+2):
+    for i in range(nominal.GetNbinsX()+2):
         mini = min(get_err(w, i, -1) for w in wrps)
         maxi = max(get_err(w, i, +1) for w in wrps)
         avg, err = (mini + maxi)/2., (maxi - mini)/2.
@@ -1234,7 +1234,7 @@ def squash_sys_stddev(wrps):
     histos = list(w.histo for w in wrps)
     histo = histos[0].Clone()
     histo_sys_err = histos[0].Clone()
-    for i in xrange(histo.GetNbinsX()+2):
+    for i in range(histo.GetNbinsX()+2):
         x = numpy.array(list(h.GetBinContent(i) for h in histos))
         histo_sys_err.SetBinContent(i, x.mean())
         histo_sys_err.SetBinError(i, x.var()**.5)
@@ -1278,7 +1278,7 @@ def get_sys_int(wrp, use_bin_width=False):
     sys_up = wrp.histo_sys_err.Clone()
     sys_down = wrp.histo_sys_err.Clone()
 
-    for i in xrange(sys_up.GetNbinsX()+2):
+    for i in range(sys_up.GetNbinsX()+2):
         sys_up.SetBinContent(i, sys_up.GetBinContent(i)+sys_up.GetBinError(i))
         sys_down.SetBinContent(i, sys_down.GetBinContent(i)-sys_down.GetBinError(i))
 

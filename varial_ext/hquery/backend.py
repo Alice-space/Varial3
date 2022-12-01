@@ -2,7 +2,7 @@ from varial.plotter import mk_rootfile_plotter
 from varial.main import process_settings_kws
 from varial.webcreator import WebCreator
 from varial.tools import Runner
-import quantitylist
+from . import quantitylist
 import varial
 import string
 import shutil
@@ -42,7 +42,7 @@ class HistoCache(varial.tools.Tool):
         self.init = False
 
     def duplicate_section(self, from_name, to_name):
-        for key in self.result_dict.keys():
+        for key in list(self.result_dict.keys()):
             if key.split('/')[0] == from_name:
                 _, histoname, sample = key.split('/')
                 wrp = varial.op.copy(self.result_dict[key])
@@ -52,13 +52,13 @@ class HistoCache(varial.tools.Tool):
         self.fill_result()
 
     def delete_section(self, name):
-        for key in self.result_dict.keys():
+        for key in list(self.result_dict.keys()):
             if key.split('/')[0] == name:
                 del self.result_dict[key]
         self.fill_result()
 
     def delete_histo(self, name):
-        for key in self.result_dict.keys():
+        for key in list(self.result_dict.keys()):
             if key.split('/')[1] == name:
                 del self.result_dict[key]
         self.fill_result()
@@ -102,7 +102,7 @@ class HQueryBackend(object):
             os.system('touch sections/webcreate_request')
 
         histos = kws.pop('histos', {})
-        for name, tple in histos.iteritems():
+        for name, tple in histos.items():
             self.check_histo_item(name, tple)
         self.params = dict(histos=histos,
                            treename=kws.pop('treename'),
@@ -191,7 +191,7 @@ class HQueryBackend(object):
         if section:
             ssw = [self.sec_sel_weight[section]]
         else:
-            ssw = list(self.sec_sel_weight.itervalues())
+            ssw = list(self.sec_sel_weight.values())
 
         if not (ssw and self.params['histos']):
             return
@@ -246,8 +246,8 @@ class HQueryBackend(object):
                 f.write('(enable webcreation also for empty folders)\n')
             self.sec_sel_weight[name] = (name, [], self.weight)
             self.sel_info[name] = dict(
-                (hname, (u'', u''))
-                for hname in self.params['histos'].iterkeys()
+                (hname, ('', ''))
+                for hname in self.params['histos'].keys()
             )
 
         self.q_out.put('Section created: ' + name)
@@ -293,14 +293,14 @@ class HQueryBackend(object):
             raise
 
         # add empty selection in every section
-        for si in self.sel_info.itervalues():
-            si[name] = (u'', u'')
+        for si in self.sel_info.values():
+            si[name] = ('', '')
 
         self.q_out.put('redirect:index.html#{}'.format(name))
 
     def delete_histogram(self, name):
         del self.params['histos'][name]
-        for si in self.sel_info.itervalues():
+        for si in self.sel_info.values():
             del si[name]
         names = list(name + tok +'.png' for tok in ('_lin', '_log', ''))
         for section in self.sec_sel_weight:
@@ -332,7 +332,7 @@ class HQueryBackend(object):
 
         all_reqs = (
             (var, (kws[var+' low'], kws[var+' high']))
-            for var in self.params['histos'].iterkeys()
+            for var in self.params['histos'].keys()
         )
         all_reqs = list(
             (var, lo_hi, format_sel_str(var, *lo_hi))
@@ -353,7 +353,7 @@ class HQueryBackend(object):
             self.q_out.put('Selection unchanged.')
             return
 
-        self.q_out.put('Selection updated: ' + '; '.join(filter(None, updates)))
+        self.q_out.put('Selection updated: ' + '; '.join([_f for _f in updates if _f]))
         old_sel_list = self.sec_sel_weight[section][1]
         self.sec_sel_weight[section] = (section, sel_list, self.weight)
 
@@ -413,7 +413,7 @@ class HQueryBackend(object):
         if self.hc.type_spec.data:
             filenames = self.tp.filenames[self.hc.type_spec.data[0]]
         else:
-            filenames = next(self.tp.filenames.itervalues())
+            filenames = next(iter(self.tp.filenames.values()))
         self.branchname_proc = quantitylist.get_proc(filenames, self.params['treename'])
         if not self.read_settings():
             self.run_treeprojection()
@@ -435,7 +435,7 @@ class HQueryBackend(object):
             # process request
             try:
                 self.process_request(item)
-            except (RuntimeError, AssertionError), e:
+            except (RuntimeError, AssertionError) as e:
                 msg = 'ERROR: %s' % e.message
                 varial.monitor.message('HQueryBackend.process_request', msg)
                 self.q_out.put(msg)

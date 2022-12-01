@@ -126,17 +126,17 @@ class JugTreeProjector(TreeProjectorBase):
 
             items_due = list(
                 (not d) and os.path.exists(p + '.root')
-                for (d, (_, p)) in itertools.izip(items_done, self.jug_tasks)
+                for (d, (_, p)) in zip(items_done, self.jug_tasks)
             )
             items_done = list(
                 a or b
-                for a, b in itertools.izip(items_done, items_due)
+                for a, b in zip(items_done, items_due)
             )
             n_done_prev, n_done = n_done, sum(items_done)
 
             time.sleep(0.3)  # wait for write  # TODO wait for open exclusively
             if n_done_prev != n_done:
-                for d, (_, p) in itertools.izip(items_due, self.jug_tasks):
+                for d, (_, p) in zip(items_due, self.jug_tasks):
                     if d:
                         ws = self.transfer_result(p)
                         if self.use_hot_result:

@@ -7,7 +7,7 @@ Originally taken from https://github.com/HeinAtCERN/BTagDeltaR/blob/master/Analy
 import os
 import varial.diskio
 import varial.tools
-import e02_make_a_tool
+from . import e02_make_a_tool
 from varial.extensions.fwlite import Fwlite
 
 # You can make a fwlite job like this:

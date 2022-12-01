@@ -263,7 +263,7 @@ class CmsRun(toolinterface.Tool):
             self.message(
                 self, "INFO settings.suppress_eventloop_exec == True, pass...")
             return
-        if not (settings.not_ask_execute or raw_input(
+        if not (settings.not_ask_execute or input(
                 "Really run these cmsRun jobs:\n   "
                 + ",\n   ".join(map(str, self.waiting_pros))
                 + ('\nusing %i cores' % settings.max_num_processes)
@@ -290,7 +290,7 @@ class CmsRun(toolinterface.Tool):
             if not os.path.exists(path):
                 os.mkdir(path)
 
-        for name, smpl in analysis.all_samples.iteritems():
+        for name, smpl in analysis.all_samples.items():
             process = CmsRunProcess(smpl, self.try_reuse, self.cfg_filename)
             if process.check_reuse_possible(self.use_file_service):
                 self.finished_pros.append(process)
@@ -474,7 +474,7 @@ def generate_samples(in_filenames, in_path='', out_path=''):
 def generate_samples_glob(glob_path, out_path):
     """Globs for files and creates according samples."""
     in_filenames = glob.glob(glob_path)
-    in_filenames = itertools.imap(
+    in_filenames = map(
         lambda t: 'file:' + t,  # prefix with 'file:' for cmssw
         in_filenames
     )
@@ -529,7 +529,7 @@ class SampleNormalizer(Tool):
         next(gen.save_canvas_lin_log([canv], lambda _: 'before'))
 
         # alter samples
-        for s in analysis.mc_samples().itervalues():
+        for s in analysis.mc_samples().values():
             s.lumi /= factor
             s.x_sec /= factor
         for a in analysis.fs_aliases:

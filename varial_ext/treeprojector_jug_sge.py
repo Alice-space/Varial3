@@ -115,7 +115,7 @@ class SGEWorker(object):
     @staticmethod
     def do_work(work_path):
         try:
-            print 'INFO trying to start jugfile:', work_path
+            print('INFO trying to start jugfile:', work_path)
             if os.path.exists(work_path):
                 jug.jug.main(['', 'execute', work_path])
 
@@ -155,9 +155,9 @@ class SGEWorker(object):
                 time.sleep(1.)
 
     def start(self):
-        print 'SGEWorker started.'
-        print 'SGEWorker task_id:           ', self.task_id
-        print 'SGEWorker username:          ', self.username
-        print 'SGEWorker jug_file_path_pat: ', self.jug_file_path_pat
+        print('SGEWorker started.')
+        print('SGEWorker task_id:           ', self.task_id)
+        print('SGEWorker username:          ', self.username)
+        print('SGEWorker jug_file_path_pat: ', self.jug_file_path_pat)
 
         self.find_work_forever()

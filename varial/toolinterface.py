@@ -9,13 +9,13 @@ import sys
 import os
 
 
-from util import ResettableType, deepish_copy
-import multiproc
-import analysis
-import settings
-import wrappers
-import monitor
-import diskio
+from .util import ResettableType, deepish_copy
+from . import multiproc
+from . import analysis
+from . import settings
+from . import wrappers
+from . import monitor
+from . import diskio
 
 
 TOOLNAME_CHARS = ' -_' + string.ascii_letters + string.digits
@@ -32,7 +32,7 @@ class _ToolBase(object):
         super(_ToolBase, self).__init__()
 
         # name
-        if isinstance(tool_name, unicode):
+        if isinstance(tool_name, str):
             tool_name = str(tool_name)
 
         if not tool_name:
@@ -85,9 +85,8 @@ class _ToolBase(object):
         return analysis.lookup_result(key, default)
 
 
-class Tool(_ToolBase):
+class Tool(_ToolBase, metaclass=ResettableType):
     """Tool is the host for your business code."""
-    __metaclass__ = ResettableType
     no_reset = False
     can_reuse = True
 
@@ -234,7 +233,7 @@ class ToolChain(_ToolBase):
                     new_msg = '%s\nexception occured at path (class): %s (%s)' % (
                         evalue, analysis.cwd[:-1], t.__class__.__name__)
                     evalue = etype(new_msg, *evalue.args[1:])
-                raise etype, evalue, etb
+                raise etype(evalue).with_traceback(etb)
             t.finished()
             self._reuse = t._reuse
 
@@ -279,7 +278,7 @@ class ToolChainVanilla(ToolChain):
     def __enter__(self):
         res = super(ToolChainVanilla, self).__enter__()
         old_analysis_data = {}
-        for key, val in analysis.__dict__.iteritems():
+        for key, val in analysis.__dict__.items():
             if not (
                 key[0] == '_'
                 or key == 'results_base'    # must be kept for lookup
@@ -364,7 +363,7 @@ class ToolChainParallel(ToolChain):
         n_tools = len(self.tool_chain)
         n_workers = self.n_workers or min(n_tools, settings.max_num_processes)
         my_path = analysis.get_current_tool_path()
-        tool_index_list = list((my_path, i) for i in xrange(n_tools))
+        tool_index_list = list((my_path, i) for i in range(n_tools))
 
         # run processing
         with multiproc.WorkerPool(n_workers) as pool:

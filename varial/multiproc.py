@@ -32,7 +32,7 @@ worker store the data on disk and read it back in the host.
 """
 
 import multiprocessing.pool
-import settings
+from . import settings
 import sys
 
 _cpu_semaphore = None
@@ -55,13 +55,13 @@ def _catch_exception_in_worker(func, *args, **kws):
         if _traceback_printlock.acquire(block=False):
             import traceback
             tb = ''.join(traceback.format_exception(*sys.exc_info()))
-            print '='*80
-            print 'EXCEPTION IN PARALLEL EXECUTION START'
-            print '='*80
-            print tb
-            print '='*80
-            print 'EXCEPTION IN PARALLEL EXECUTION END'
-            print '='*80
+            print('='*80)
+            print('EXCEPTION IN PARALLEL EXECUTION START')
+            print('='*80)
+            print(tb)
+            print('='*80)
+            print('EXCEPTION IN PARALLEL EXECUTION END')
+            print('='*80)
 
     return res
 

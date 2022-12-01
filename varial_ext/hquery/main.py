@@ -1,11 +1,11 @@
-import engine
+from . import engine
 
 
 def main(**kws):
     no_session = kws.pop('no_session', False)
     e = engine.HQueryEngine(kws)
 
-    import server  # server should not be imported in backend process
+    from . import server  # server should not be imported in backend process
     server.start(e, no_session)
 
 # TODO "reset" -> make everything new

@@ -57,7 +57,7 @@ class TexContent(Tool):
             self.dest_dir_name = p_elems[-1] or p_elems[-2]
 
     def copy_image_files(self):
-        for blockname, blockfiles in self.images.iteritems():
+        for blockname, blockfiles in self.images.items():
             hashified_and_path = list(
                 (self._hashified_filename(bf), bf) for bf in blockfiles
             )
@@ -85,7 +85,7 @@ class TexContent(Tool):
                     f.write(self.include_str % inc_dest + '\n')
 
     def copy_plain_files(self):
-        for fname, path, in self.tex_files.iteritems():
+        for fname, path, in self.tex_files.items():
             shutil.copy(path, self._join(fname))
 
     def run(self):

@@ -3,9 +3,9 @@ import json
 import ROOT
 
 
-plain_types = {'int': int, 'float': float, 'long': long, 'bool': bool}
-plain_types_list = plain_types.values()
-plain_c_types = plain_types.keys() + ['double', 'short']
+plain_types = {'int': int, 'float': float, 'long': int, 'bool': bool}
+plain_types_list = list(plain_types.values())
+plain_c_types = list(plain_types.keys()) + ['double', 'short']
 
 
 def get_proc(filenames, treename):
